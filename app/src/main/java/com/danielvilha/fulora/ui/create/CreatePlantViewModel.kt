@@ -114,10 +114,15 @@ class CreatePlantViewModel @Inject constructor(
     private fun onSpeciesChange(speciesName: String) {
         viewModelScope.launch {
             try {
-                val plant = plantRepository.searchPlant(speciesName)
-                _uiState.update {
-                    it.copy(
-                        plant = plant?.copy(name = speciesName),
+                val speciesPlantData = plantRepository.searchPlant(speciesName)
+                _uiState.update { currentState ->
+                    val currentEditedPlant = currentState.plant
+                    val mergedPlant = speciesPlantData?.copy(
+                        name = currentEditedPlant?.name?.takeIf { it.isNotBlank() } ?: speciesPlantData.name,
+                        location = currentEditedPlant?.location ?: speciesPlantData.location,
+                    )
+                    currentState.copy(
+                        plant = mergedPlant,
                         searchQuery = "",
                         searchResults = null
                     )
@@ -138,11 +143,7 @@ class CreatePlantViewModel @Inject constructor(
         viewModelScope.launch {
             if (currentPlant != null) {
                 try {
-                    val plantToSave = currentPlant.copy(
-                        specieId = _uiState.value.searchResults?.species?.firstOrNull()?.id,
-                        speciesFamily = _uiState.value.searchResults?.species?.firstOrNull()?.family
-                    )
-                    plantRepository.createPlant(plantToSave)
+                    plantRepository.createPlant(currentPlant)
                     _uiState.update { it.copy(isSaved = true) }
                     _events.send(CreatePlantEvent.SaveSuccess)
                 } catch (e: Exception) {

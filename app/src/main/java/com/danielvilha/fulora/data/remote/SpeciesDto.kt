@@ -11,7 +11,7 @@ data class SpeciesDto(
     val scientificName: List<String>,
     @SerializedName("other_name")
     val otherName: List<String>,
-    val family: String,
+    val family: String?,
     val hybrid: String?,
     val authority: String?,
     val subspecies: String?,

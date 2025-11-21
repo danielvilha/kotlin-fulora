@@ -1,9 +1,11 @@
 package com.danielvilha.fulora.service
 
+import androidx.compose.ui.text.toUpperCase
 import com.danielvilha.fulora.data.Plant
 import com.danielvilha.fulora.data.PlantDao
 import com.danielvilha.fulora.data.remote.SpeciesDto
 import kotlinx.coroutines.flow.Flow
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,8 +50,12 @@ class PlantRepository @Inject constructor(
     private fun mapSpeciesToPlant(speciesDto: SpeciesDto): Plant {
         return Plant(
             specieId = speciesDto.id,
-            name = speciesDto.commonName,
-            speciesFamily = speciesDto.family,
+            name = speciesDto.commonName.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            },
+            speciesFamily = speciesDto.family ?: speciesDto.scientificName.firstOrNull(),
             location = "",
             wateringIntervalDays = mapWateringToDays(speciesDto.watering),
             fertilizingIntervalDays = mapFertilizingToDays(speciesDto.cultivar),
@@ -57,7 +63,7 @@ class PlantRepository @Inject constructor(
             lastWateredDate = System.currentTimeMillis(),
             lastFertilizedDate = System.currentTimeMillis(),
             lastRepottedDate = System.currentTimeMillis(),
-            imageUrl = speciesDto.defaultImage.originalUrl
+            imageUrl = speciesDto.defaultImage?.originalUrl ?: ""
         )
     }
 

@@ -2,6 +2,14 @@
     <string name="app_name">Fulora</string>
     <string name="plant">Plant</string>
     <string name="plant_not_found">Plant not found</string>
+    <string name="plant_name">Plant name</string>
+    <string name="location">Localization</string>
+    <string name="save_plant">Save Plant</string>
+    <string name="search_specie">Search specie…</string>
+    <string name="watering_frequency">Watering Frequency (days)</string>
+    <string name="fertilizing_frequency">Fertilization Frequency (days)</string>
+    <string name="reporting_frequency">Reporting Frequency (days)</string>
+    <string name="frequency_of_pot_replacement">Frequency of pot replacement (months)</string>
 
     <string-array name="localization">
         <item>Living room</item>

@@ -21,9 +21,9 @@ data class Plant(
 ) {
     companion object {
         fun create() = Plant(
-            specieId = null,
+            specieId = 0,
             name = "",
-            speciesFamily = null,
+            speciesFamily = "",
             location = "",
             wateringIntervalDays = 0,
             fertilizingIntervalDays = 0,
@@ -31,7 +31,7 @@ data class Plant(
             lastWateredDate = 0L,
             lastFertilizedDate = 0L,
             lastRepottedDate = 0L,
-            imageUrl = null,
+            imageUrl = "",
         )
     }
 }

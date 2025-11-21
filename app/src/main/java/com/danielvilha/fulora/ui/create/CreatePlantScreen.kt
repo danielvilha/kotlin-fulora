@@ -38,7 +38,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -139,60 +141,20 @@ fun CreatePlantScreen(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        Text("Detalhes da Planta", style = MaterialTheme.typography.titleLarge)
+                        Text("Plant Details", style = MaterialTheme.typography.titleLarge)
                         Spacer(modifier = Modifier.height(16.dp))
 
                         OutlinedTextField(
                             value = state.plant?.name ?: "",
                             onValueChange = { onEvent(CreatePlantUiEvent.OnPlantNameChange(it)) },
-                            label = { Text("Nome da Planta") },
+                            label = { Text(stringResource(id = R.string.plant_name)) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        var isLocationMenuExpanded by rememberSaveable { mutableStateOf(false) }
-                        val locations = stringArrayResource(id = R.array.localization)
-
-                        ExposedDropdownMenuBox(
-                            expanded = isLocationMenuExpanded,
-                            onExpandedChange = { isLocationMenuExpanded = it },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            OutlinedTextField(
-                                value = state.plant?.location ?: "",
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Localization") },
-                                trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(
-                                        expanded = isLocationMenuExpanded
-                                    )
-                                },
-                                modifier = Modifier
-                                    .menuAnchor(
-                                        ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                        true
-                                    )
-                                    .fillMaxWidth()
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = isLocationMenuExpanded,
-                                onDismissRequest = { isLocationMenuExpanded = false }
-                            ) {
-                                locations.forEach { location ->
-                                    DropdownMenuItem(
-                                        text = { Text(location) },
-                                        onClick = {
-                                            onEvent(CreatePlantUiEvent.OnPlantLocationChange(location))
-                                            isLocationMenuExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
+                        LocationsField(state, onEvent)
 
                         Spacer(modifier = Modifier.height(8.dp))
                         WateringFrequencyField(state, onEvent)
@@ -210,9 +172,63 @@ fun CreatePlantScreen(
                             modifier = Modifier.fillMaxWidth(),
                             enabled = state.isEnabled
                         ) {
-                            Text("SALVAR PLANTA")
+                            Text(
+                                modifier = Modifier.testTag("SAVE PLANT BUTTON"),
+                                text = stringResource(id = R.string.save_plant).uppercase(),
+                            )
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LocationsField(
+    state: CreatePlantUiState,
+    onEvent: (CreatePlantUiEvent) -> Unit
+) {
+    var isLocationMenuExpanded by rememberSaveable { mutableStateOf(false) }
+    val locations = stringArrayResource(id = R.array.localization)
+
+    Row {
+        ExposedDropdownMenuBox(
+            expanded = isLocationMenuExpanded,
+            onExpandedChange = { isLocationMenuExpanded = it },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = state.plant?.location ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(text = stringResource(R.string.location)) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = isLocationMenuExpanded
+                    )
+                },
+                modifier = Modifier
+                    .menuAnchor(
+                        ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                        true
+                    )
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = isLocationMenuExpanded,
+                onDismissRequest = { isLocationMenuExpanded = false }
+            ) {
+                locations.forEach { location ->
+                    DropdownMenuItem(
+                        text = { Text(location) },
+                        onClick = {
+                            onEvent(CreatePlantUiEvent.OnPlantLocationChange(location))
+                            isLocationMenuExpanded = false
+                        }
+                    )
                 }
             }
         }
@@ -250,7 +266,7 @@ private fun PlantSearchBar(
                     },
                     expanded = active,
                     onExpandedChange = { active = it },
-                    placeholder = { Text("Search specie...") },
+                    placeholder = { Text(text = stringResource(R.string.search_specie)) },
                     trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     leadingIcon = {
                         IconButton(onClick = onBackClick) {
@@ -302,7 +318,7 @@ private fun WateringFrequencyField(
                 value = state.plant?.wateringIntervalDays?.takeIf { it > 0 }?.toString() ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Watering Frequency (days)") },
+                label = { Text(text = stringResource(R.string.watering_frequency)) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(
                         expanded = isLocationMenuExpanded
@@ -350,7 +366,7 @@ private fun FertilizingFrequencyField(
                 value = state.plant?.fertilizingIntervalDays?.takeIf { it > 0 }?.toString() ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Fertilization Frequency (days)") },
+                label = { Text(text = stringResource(R.string.fertilizing_frequency)) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(
                         expanded = isLocationMenuExpanded
@@ -398,7 +414,7 @@ private fun ReportingFrequencyField(
                 value = state.plant?.reportingIntervalMonths?.takeIf { it > 0 }?.toString() ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Frequency of pot replacement (months)") },
+                label = { Text(text = stringResource(R.string.frequency_of_pot_replacement)) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(
                         expanded = isLocationMenuExpanded
